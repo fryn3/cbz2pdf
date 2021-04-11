@@ -27,7 +27,8 @@ private slots:
     void on_pushButton_clicked();
 
 private:
-    void createPdf(QString pdfFullName, QStringList filesName);
+    void createPdf(QString dirOrZipName, QString pdfFullName = nullptr);
     void addPage(QPrinter &printer, QPainter &painter, QString fileName);
     Ui::MainWindow *ui;
+    int _numPage = 0;
 };

@@ -14,25 +14,46 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow() { delete ui; }
 
 
-void MainWindow::createPdf(QString pdfFullName, QStringList filesName) {
+void MainWindow::createPdf(QString dirOrZipName, QString pdfFullName) {
+    QFileInfo fileInfo(dirOrZipName);
+    QStringList selectFiles;
+    if (fileInfo.isDir()) {
+        QDir dir(ui->leIn->text());
+        dir.setFilter(QDir::Files | QDir::NoSymLinks);
+        dir.setSorting(QDir::Name);
+        QFileInfoList list = dir.entryInfoList();
+        for (int i = 0; i < list.size(); ++i) {
+            selectFiles.append(list.at(i).absoluteFilePath());
+        }
+    } else {
+        QMessageBox::warning(this, "amm", "I must todo working with zip");
+        return;
+    }
+
+
     QPrinter printer;
-    if (filesName.isEmpty()) {
+    _numPage = 0;
+    if (selectFiles.isEmpty()) {
+        ui->textBrowser->append("dir is empty");
         return;
     }
     printer.setOutputFormat(QPrinter::PdfFormat);
+    if (pdfFullName.isEmpty()) {
+        pdfFullName = QFileInfo(dirOrZipName).absoluteFilePath().append(".pdf");
+    }
     printer.setOutputFileName(pdfFullName);
     printer.setFullPage(true);
     QPainter painter;
-
-    for (const auto &str: filesName) {
+    ui->textBrowser->append(QString("create %1 file").arg(QFileInfo(pdfFullName).fileName()));
+    for (const auto &str: selectFiles) {
+        ui->textBrowser->append(QString("image[%1]: %2").arg(_numPage + 1, 3, 10, QLatin1Char('0')).arg(str));
         addPage(printer, painter, str);
     }
     painter.end();
 }
 
 void MainWindow::addPage(QPrinter &printer, QPainter &painter, QString fileName) {
-    static int numPage = 0;
-    ++numPage;
+    ++_numPage;
     qDebug() << fileName;
     QPixmap pixmap;
     if (!pixmap.load(fileName)) {
@@ -40,8 +61,8 @@ void MainWindow::addPage(QPrinter &printer, QPainter &painter, QString fileName)
         return;
     }
     qDebug() << pixmap.size();
-    qDebug() << printer.setPageSize(QPageSize(pixmap.size() * .75, QPageSize::Point));
-    if (numPage == 1) {
+    qDebug() << printer.setPageSize(QPageSize(pixmap.size() * ui->sbK->value(), QPageSize::Point));
+    if (_numPage == 1) {
         if (! painter.begin(&printer)) {
             qWarning("failed to open file, is it writable?");
             return;
@@ -58,15 +79,6 @@ void MainWindow::on_btnSelectDir_clicked() {
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
     ui->leIn->setText(dirStr);
-    QDir dir(dirStr);
-    dir.setFilter(QDir::Files | QDir::NoSymLinks);
-    QFileInfoList list = dir.entryInfoList();
-    qDebug() << "     Bytes Filename";
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        qDebug() << QString("%1 %2").arg(fileInfo.size(), 10)
-                                    .arg(fileInfo.fileName());
-    }
 }
 
 void MainWindow::on_btnSelectFile_clicked() {
@@ -82,34 +94,14 @@ void MainWindow::on_pushButton_clicked() {
 }
 
 void MainWindow::on_btnStart_clicked() {
+    ui->textBrowser->clear();
     if (ui->leIn->text().isEmpty()) {
         QMessageBox::warning(this, "Select file", "Select dir or file for reading");
         return;
     }
-    if (ui->leOutFile->text().isEmpty()) {
-        QMessageBox::warning(this, "Select file", "Select out file");
-        return;
-    }
-    QFileInfo fileInfo(ui->leIn->text());
-    QStringList selectFiles;
-    if (fileInfo.isDir()) {
-        QDir dir(ui->leIn->text());
-        dir.setFilter(QDir::Files | QDir::NoSymLinks);
-        QFileInfoList list = dir.entryInfoList();
-        for (int i = 0; i < list.size(); ++i) {
-            selectFiles.append(list.at(i).absoluteFilePath());
-        }
-    } else {
-        QMessageBox::warning(this, "amm", "I must todo working with zip");
-        return;
-    }
-    if (selectFiles.isEmpty()) {
-        ui->statusbar->showMessage("Files not selected", 5);
-        return;
-    }
-    createPdf(ui->leOutFile->text(), selectFiles);
+    createPdf(ui->leIn->text(), ui->leOutFile->text());
     ui->statusbar->showMessage(QString("File %1 created!")
-                               .arg(QFileInfo(ui->leOutFile->text()).fileName()), 5);
+                               .arg(QFileInfo(ui->leOutFile->text()).fileName()), 15);
 }
 
 
