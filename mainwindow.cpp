@@ -16,6 +16,9 @@ MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::createPdf(QString pdfFullName, QStringList filesName) {
     QPrinter printer;
+    if (filesName.isEmpty()) {
+        return;
+    }
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(pdfFullName);
     printer.setFullPage(true);
@@ -68,7 +71,7 @@ void MainWindow::on_btnSelectDir_clicked() {
 
 void MainWindow::on_btnSelectFile_clicked() {
     QString fileStr = QFileDialog::getOpenFileName(this, tr("Select file"), "",
-                                                  tr("Zip (*.zip, *.cbz);;Any (*.*)"));
+                                                  tr("Zip (*.zip *.cbz);;Any (*.*)"));
     ui->leIn->setText(fileStr);
 }
 
@@ -97,11 +100,16 @@ void MainWindow::on_btnStart_clicked() {
             selectFiles.append(list.at(i).absoluteFilePath());
         }
     } else {
-        QMessageBox::warning(this, "amm", "must todo");
+        QMessageBox::warning(this, "amm", "I must todo working with zip");
+        return;
+    }
+    if (selectFiles.isEmpty()) {
+        ui->statusbar->showMessage("Files not selected", 5);
+        return;
     }
     createPdf(ui->leOutFile->text(), selectFiles);
     ui->statusbar->showMessage(QString("File %1 created!")
-                               .arg(QFileInfo(ui->leOutFile->text()).fileName()));
+                               .arg(QFileInfo(ui->leOutFile->text()).fileName()), 5);
 }
 
 
