@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cbz2pdf.h"
+
 #include <QMainWindow>
 #include <QPainter>
 #include <QPixmap>
@@ -19,16 +21,13 @@ public:
 
 private slots:
     void on_btnSelectDir_clicked();
-
-    void on_btnStart_clicked();
-
     void on_btnSelectFile_clicked();
-
-    void on_pushButton_clicked();
+    void on_btnStart_clicked();
 
 private:
     void createPdf(QString dirOrZipName, QString pdfFullName = nullptr);
     void addPage(QPrinter &printer, QPainter &painter, QString fileName);
     Ui::MainWindow *ui;
     int _numPage = 0;
+    Cbz2pdf _controller;
 };
