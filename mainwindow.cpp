@@ -17,13 +17,23 @@ MainWindow::~MainWindow() { delete ui; }
 void MainWindow::createPdf(QString dirOrZipName, QString pdfFullName) {
     QFileInfo fileInfo(dirOrZipName);
     QStringList selectFiles;
+    bool haveSubDirs = false;
     if (fileInfo.isDir()) {
-        QDir dir(ui->leIn->text());
+        QDir dir(dirOrZipName);
+        QFileInfoList listDirs = dir.entryInfoList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDir::Name);
+        haveSubDirs = !listDirs.isEmpty();
+        for (auto &dir: listDirs) {
+            createPdf(dir.absoluteFilePath());
+        }
         dir.setFilter(QDir::Files | QDir::NoSymLinks);
         dir.setSorting(QDir::Name);
         QFileInfoList list = dir.entryInfoList();
-        for (int i = 0; i < list.size(); ++i) {
-            selectFiles.append(list.at(i).absoluteFilePath());
+        for (auto &fileInfo: list) {
+            if (!fileInfo.absoluteFilePath().endsWith(".pdf", Qt::CaseInsensitive)
+                    && !fileInfo.absoluteFilePath().endsWith(".zip", Qt::CaseInsensitive)) {
+                /// В будущем обрабатывать зип архивы!
+                selectFiles.append(fileInfo.absoluteFilePath());
+            }
         }
     } else {
         QMessageBox::warning(this, "amm", "I must todo working with zip");
@@ -33,7 +43,7 @@ void MainWindow::createPdf(QString dirOrZipName, QString pdfFullName) {
 
     QPrinter printer;
     _numPage = 0;
-    if (selectFiles.isEmpty()) {
+    if (selectFiles.isEmpty() && !haveSubDirs) {
         ui->textBrowser->append("dir is empty");
         return;
     }
@@ -44,7 +54,7 @@ void MainWindow::createPdf(QString dirOrZipName, QString pdfFullName) {
     printer.setOutputFileName(pdfFullName);
     printer.setFullPage(true);
     QPainter painter;
-    ui->textBrowser->append(QString("create %1 file").arg(QFileInfo(pdfFullName).fileName()));
+    ui->textBrowser->append(QString("generation %1 file").arg(QFileInfo(pdfFullName).fileName()));
     for (const auto &str: selectFiles) {
         ui->textBrowser->append(QString("image[%1]: %2").arg(_numPage + 1, 3, 10, QLatin1Char('0')).arg(str));
         addPage(printer, painter, str);
