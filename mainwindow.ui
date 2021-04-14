@@ -42,20 +42,20 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="3">
-     <widget class="QPushButton" name="btnStart">
-      <property name="text">
-       <string>Start convert to PDF</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="3">
+    <item row="2" column="0">
      <widget class="QProgressBar" name="progressBar">
       <property name="maximum">
        <number>1000</number>
       </property>
       <property name="value">
        <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1" colspan="3">
+     <widget class="QPushButton" name="btnStartStop">
+      <property name="text">
+       <string>Start convert to PDF</string>
       </property>
      </widget>
     </item>
@@ -77,14 +77,13 @@
   <tabstop>leIn</tabstop>
   <tabstop>btnSelectDir</tabstop>
   <tabstop>btnSelectFile</tabstop>
-  <tabstop>btnStart</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
    <sender>sbK</sender>
    <signal>editingFinished()</signal>
-   <receiver>btnStart</receiver>
+   <receiver>btnStartStop</receiver>
    <slot>setFocus()</slot>
    <hints>
     <hint type="sourcelabel">

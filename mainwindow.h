@@ -19,15 +19,25 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
+public slots:
+    void setPath(QString path);
+    void setK(double coef);
+    void start();
+
 private slots:
     void on_btnSelectDir_clicked();
     void on_btnSelectFile_clicked();
-    void on_btnStart_clicked();
+signals:
+    void isStartedChanged();
 
 private:
+    bool isStarted() const;
+    void setIsStarted(bool value);
     void createPdf(QString dirOrZipName, QString pdfFullName = nullptr);
     void addPage(QPrinter &printer, QPainter &painter, QString fileName);
     Ui::MainWindow *ui;
     int _numPage = 0;
     Cbz2pdf _controller;
+    bool _isStarted = false;
 };
