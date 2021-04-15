@@ -12,21 +12,24 @@ int main(int argc, char *argv[])
 
     QCommandLineOption coefOption({"k", "coef"}, "Set coefficient", "coef");
     QCommandLineOption pathOption({"d", "dir", "f", "file", "p", "path"}, "Input path", "path");
+    QCommandLineOption noLogOption({"no-log", "nl"}, "Without logs");
 
     QCommandLineParser parser;
-    parser.addOptions({coefOption, pathOption});
+    parser.addOptions({coefOption, pathOption, noLogOption});
     parser.process(a.arguments());
     Cbz2pdf c;
-    QObject::connect(&c, &Cbz2pdf::started, [] {
-        std::cout << "started" << std::endl;
-    });
-    QObject::connect(&c, &Cbz2pdf::stoped, [] {
-        std::cout << "stoped!" << std::endl;
-    });
+    if (!parser.isSet(noLogOption)) {
+        QObject::connect(&c, &Cbz2pdf::started, [] {
+            std::cout << "started" << std::endl;
+        });
+        QObject::connect(&c, &Cbz2pdf::stoped, [] {
+            std::cout << "stoped!" << std::endl;
+        });
 
-    QObject::connect(&c, &Cbz2pdf::logMsg, [] (QString msg) {
-        std::cout << "msg: " << qPrintable(msg) << std::endl;
-    });
+        QObject::connect(&c, &Cbz2pdf::logMsg, [] (QString msg) {
+            std::cout << "msg: " << qPrintable(msg) << std::endl;
+        });
+    }
 
     QObject::connect(&c, &Cbz2pdf::finished, &a, &QCoreApplication::exit);
     if (parser.isSet(pathOption)) {
@@ -44,7 +47,6 @@ int main(int argc, char *argv[])
         std::cin >> k;
         c.setK(k);
     }
-    std::cout << "lets go" << std::endl;
     c.start();
     return a.exec();
 }
