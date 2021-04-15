@@ -1,27 +1,20 @@
 QT -= gui
 
-TEMPLATE = lib
-DEFINES += CBZ2PDF_LIBRARY
+CONFIG += c++11 console
+CONFIG -= app_bundle
 
-CONFIG += c++11
+DESTDIR = ../Bin
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+include(../cbz2pdf/cbz2pdf.pri)
+
 SOURCES += \
-    cbz2pdf.cpp \
-    cbz2pdfprivate.cpp
-
-include(cbz2pdf.pri)
-
-DESTDIR = ../Bin
+        main.cpp
 
 # Default rules for deployment.
-unix {
-    target.path = /usr/lib
-}
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-HEADERS += \
-    cbz2pdfprivate.h

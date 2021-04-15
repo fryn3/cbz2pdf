@@ -1,5 +1,8 @@
 INCLUDEPATH += $$PWD
 
+QT += gui
+QT += printsupport
+
 HEADERS += \
     cbz2pdf.h
 
