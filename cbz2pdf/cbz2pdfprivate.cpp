@@ -110,16 +110,17 @@ int Cbz2pdfWorker::createPdf(QString dirOrZipName) {
     emit logMsg(QString("generation %1 file").arg(QFileInfo(pdfFullName).fileName()));
     for (const auto &str: selectFiles) {
         if (checkStop()) {
-            painter.end();
+            if (painter.isActive()) { painter.end(); }
             return Cbz2pdf::ErrStoped;
         }
         emit logMsg(QString("image[%1]: %2").arg(_numPage + 1, 3, 10, QLatin1Char('0')).arg(str));
         if (int err = addPage(printer, painter, str) != Cbz2pdf::NoError) {
+            if (painter.isActive()) { painter.end(); }
             return err;
         }
         addStep(dirOrZipName);
     }
-    painter.end();
+    if (painter.isActive()) { painter.end(); }
     return Cbz2pdf::NoError;
 }
 
@@ -132,7 +133,7 @@ int Cbz2pdfWorker::addPage(QPrinter &printer, QPainter &painter, QString fileNam
     }
     printer.setPageSize(QPageSize(pixmap.size() * _k, QPageSize::Point));
     if (_numPage == 1) {
-        if (! painter.begin(&printer)) {
+        if (!painter.begin(&printer)) {
             emit logMsg("failed to open file, is it writable?");
             return Cbz2pdf::ErrFileOut;
         }
