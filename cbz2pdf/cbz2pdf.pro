@@ -1,8 +1,9 @@
-QT       += core gui
-QT += printsupport
-QT += widgets
+QT -= gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += printsupport
+
+TEMPLATE = lib
+DEFINES += CBZ2PDF_LIBRARY
 
 CONFIG += c++11
 
@@ -12,17 +13,17 @@ CONFIG += c++11
 
 SOURCES += \
     cbz2pdf.cpp \
-    main.cpp \
-    mainwindow.cpp
+    cbz2pdfprivate.cpp
 
-HEADERS += \
-    cbz2pdf.h \
-    mainwindow.h
+include(cbz2pdf.pri)
 
-FORMS += \
-    mainwindow.ui
+DESTDIR = ../Bin
 
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
+unix {
+    target.path = /usr/lib
+}
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    cbz2pdfprivate.h

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>324</height>
+    <width>651</width>
+    <height>229</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,35 +66,13 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>651</width>
      <height>20</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <tabstops>
-  <tabstop>leIn</tabstop>
-  <tabstop>btnSelectDir</tabstop>
-  <tabstop>btnSelectFile</tabstop>
- </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>sbK</sender>
-   <signal>editingFinished()</signal>
-   <receiver>btnStartStop</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>733</x>
-     <y>253</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>726</x>
-     <y>275</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -3,8 +3,6 @@
 #include <QObject>
 #include <QPainter>
 #include <QPrinter>
-#include <QThread>
-#include <QDebug>
 
 class Cbz2pdf;
 
@@ -56,34 +54,3 @@ signals:
     void sigStart();
     void sigStop();
 };
-
-class Cbz2pdf : public QObject {
-    Q_OBJECT
-public:
-    enum CodeError {
-        NoError,
-        ErrStoped,
-        ErrFileOut,
-        ErrFileIn,
-
-        CodeErrorCount
-    };
-    explicit Cbz2pdf(QObject *parent = nullptr);
-    virtual ~Cbz2pdf();
-public slots:
-    void setK(double k)                         { _private->setK(k); }
-    void setDirOrZipName(QString dirOrZipName)  { _private->setDirOrZipName(dirOrZipName); }
-    void start()                                { _private->start(); }
-    void stop()                                 { _private->stop(); }
-signals:
-    void started();
-    void finished(int codeError);
-    void stoped();
-    void process(double process);
-    void logMsg(QString msg);
-private:
-    Cbz2pdfWorker *_worker;
-    Cbz2pdfPrivate *_private;
-    QThread _thread;
-};
-
